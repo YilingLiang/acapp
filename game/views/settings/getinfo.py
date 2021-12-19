@@ -21,9 +21,7 @@ def getinfo_web(request):
             'result': "用户未登录"
         })
     else:
-        player = Player.objects.get(user__exact=user)
-        # print(player)
-        # player = Player.objects.all()[0] # 只对管理员生效的
+        player = Player.objects.get(user__exact=user) # user = user
         return JsonResponse({
             'result': "success",
             'username': player.user.username,
