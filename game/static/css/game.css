@@ -55,7 +55,7 @@
 
 .ac-game-settings-login {
     width: 20vw;
-    height: 42vh;
+    height: 38vh;
     position: relative;
     top: 50%;
     left: 50%;
@@ -66,7 +66,7 @@
 
 .ac-game-settings-register {
     width: 20vw;
-    height: 50vh;
+    height: 45vh;
     position: relative;
     top: 50%;
     left: 50%;
@@ -142,22 +142,25 @@
 }
 
 .ac-game-settings-acwing {
-    display: block;
+    /*display: block;*/
     height: 7vh;
 }
 
 .ac-game-settings-acwing > img {
     position: relative;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    /*float: left;*/
+    left: 1vw;
+    margin: 5px;
+    padding: 0px;
     cursor: pointer;
-    display: block;
 }
 
 .ac-game-settings-acwing > div {
     color: white;
     font-size: 1.5vh;
-    text-align: center;
+    position: relative;
+    left: 1vw;
+    /*text-align: center;*/
     display: block;
 }
+

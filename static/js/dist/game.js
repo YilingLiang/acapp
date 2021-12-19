@@ -518,11 +518,14 @@ class Settings {
         </div>
         <br>
         <div class="ac-game-settings-acwing">
-            <img width="30" src="https://app817.acapp.acwing.com.cn/static/image/settings/acwing.png">
+            <img class="loginimg loginimg-acwing" width="30" src="https://app817.acapp.acwing.com.cn/static/image/settings/acwing.png">
+            <img class="loginimg loginimg-qq" width="30" src="https://app817.acapp.acwing.com.cn/static/image/settings/QQ.png">
+            <!--
             <br>
             <div>
-                AcWing一键登录
+                一键登录
             </div>
+            -->
         </div>
     </div>
     <div class="ac-game-settings-register">
@@ -556,11 +559,14 @@ class Settings {
         </div>
         <br>
         <div class="ac-game-settings-acwing">
-            <img width="30" src="https://app817.acapp.acwing.com.cn/static/image/settings/acwing.png">
+            <img class="loginimg loginimg-acwing" width="30" src="https://app817.acapp.acwing.com.cn/static/image/settings/acwing.png">
+            <img class="loginimg loginimg-qq" width="30" src="https://app817.acapp.acwing.com.cn/static/image/settings/QQ.png">
+            <!--
             <br>
             <div>
-                AcWing一键登录
+                一键登录
             </div>
+            -->
         </div>
     </div>
 </div>
@@ -585,7 +591,9 @@ class Settings {
 
         this.$register.hide();
 
-        this.$acwing_login = this.$settings.find('.ac-game-settings-acwing img');
+        this.$acwing_login = this.$settings.find('.ac-game-settings-acwing .loginimg-acwing');
+
+        this.$qq_login = this.$settings.find('.ac-game-settings-acwing .loginimg-qq');
 
         this.root.$ac_game.append(this.$settings);
 
@@ -603,6 +611,9 @@ class Settings {
         this.add_listening_events_register();
         this.$acwing_login.click(function(){
             outer.acwing_login();
+        });
+        this.$qq_login.click(function(){
+            outer.qq_login();
         });
     }
 
@@ -640,6 +651,10 @@ class Settings {
 
             }
         })
+    }
+
+    qq_login() {
+        console.log("click qq login");
     }
 
     login_on_remote() {  // 在远程服务器上登录
