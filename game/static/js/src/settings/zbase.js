@@ -37,6 +37,7 @@ class Settings {
         <div class="ac-game-settings-acwing">
             <img class="loginimg loginimg-acwing" width="30" src="https://app817.acapp.acwing.com.cn/static/image/settings/acwing.png">
             <img class="loginimg loginimg-qq" width="30" src="https://app817.acapp.acwing.com.cn/static/image/settings/QQ.png">
+            <img class="loginimg loginimg-gitee" width="30" src="https://app817.acapp.acwing.com.cn/static/image/settings/gitee.jpeg">
             <!--
             <br>
             <div>
@@ -78,6 +79,7 @@ class Settings {
         <div class="ac-game-settings-acwing">
             <img class="loginimg loginimg-acwing" width="30" src="https://app817.acapp.acwing.com.cn/static/image/settings/acwing.png">
             <img class="loginimg loginimg-qq" width="30" src="https://app817.acapp.acwing.com.cn/static/image/settings/QQ.png">
+            <img class="loginimg loginimg-gitee" width="30" src="https://app817.acapp.acwing.com.cn/static/image/settings/gitee.jpeg">
             <!--
             <br>
             <div>
@@ -110,6 +112,8 @@ class Settings {
 
         this.$acwing_login = this.$settings.find('.ac-game-settings-acwing .loginimg-acwing');
 
+        this.$gitee_login = this.$settings.find('.ac-game-settings-acwing .loginimg-gitee');
+
         this.$qq_login = this.$settings.find('.ac-game-settings-acwing .loginimg-qq');
 
         this.root.$ac_game.append(this.$settings);
@@ -118,8 +122,12 @@ class Settings {
     }
 
     start() {
-        this.getinfo();
-        this.add_listening_events();
+        if (this.platform === 'ACAPP') 
+            this.getinfo_acapp();
+        else {
+            this.getinfo_web();
+            this.add_listening_events();
+        }
     }
 
     add_listening_events() {
@@ -131,6 +139,9 @@ class Settings {
         });
         this.$qq_login.click(function(){
             outer.qq_login();
+        });
+        this.$gitee_login.click(function(){
+            outer.gitee_login();
         });
     }
 
@@ -168,6 +179,19 @@ class Settings {
 
             }
         })
+    }
+
+    gitee_login() {
+        $.ajax({
+            url: "https://app817.acapp.acwing.com.cn/settings/gitee/apply_code/",
+            type: "GET",
+            success: function(resp) {
+                console.log(resp);
+                if (resp.result === "success") {
+                    window.location.replace(resp.apply_code_url);
+                }
+            }
+        });
     }
 
     qq_login() {
@@ -249,7 +273,34 @@ class Settings {
         this.$login.show();
     }
 
-    getinfo() {
+    acapp_login(appid, redirect_uri, scope, state) {
+        let outer = this;
+        this.root.AcWingOS.api.oauth2.authorize(appid, redirect_uri, scope, state, function(resp) {
+            console.log(resp);
+            if (resp.result === "success") {
+                outer.username = resp.username;
+                outer.photo = resp.photo;
+                outer.hide();
+                outer.root.menu.show();
+            }
+        });
+    }
+    
+    getinfo_acapp() {
+        let outer = this;
+
+        $.ajax({
+            url: "https://app817.acapp.acwing.com.cn/settings/acwing/acapp/apply_code/",
+            type: "GET",
+            success: function(resp) {
+                if (resp.result === 'success') {
+                    outer.acapp_login(resp.appid, resp.redirect_uri, resp.scope, resp.state);
+                }
+            }
+        });
+    }
+
+    getinfo_web() {
         let outer = this;
 
         $.ajax({
