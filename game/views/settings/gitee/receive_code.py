@@ -10,7 +10,7 @@ def receive_code(request):
     data = request.GET
     code = data.get('code', '')
     state = data.get('state', '')
-    print('code',code, '\n\n\n\n', 'state:',state)
+    # print('code',code, '\n\n\n\n', 'state:',state)
 
     #如果请求失败，code拿不到值，就用空字符串代替，故用户拒绝后也能重定向到回调地址处。
     if not cache.has_key(state) or code == '':
