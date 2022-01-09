@@ -1,6 +1,7 @@
 class Player extends AcGameObject {
-    constructor(playground, x, y, radius, color, speed, is_me) {
+    constructor(playground, x, y, radius, color, speed, character, username, photo) {
         super();
+        console.log(character, username);
         this.playground = playground;
         this.ctx = this.playground.game_map.ctx;
         this.x = x;
@@ -14,26 +15,28 @@ class Player extends AcGameObject {
         this.radius = radius;
         this.color = color;
         this.speed = speed;
-        this.is_me = is_me;
+        this.character = character;
+        this.username = username;
+        this.photo = photo;
         this.is_alive = true;
         this.eps = 0.01;
         this.friction = 0.8; // 被攻击后移动的速度衰减系数
         this.spend_time = 0;
 
         this.cur_skill = null; // 当前选的技能
-		if (this.is_me) {
+		if (this.character !== "robot") {
 			this.img = new Image();
-			this.img.src = this.playground.root.settings.photo;
+			this.img.src = this.photo;
 		}
     }
 
     start() {
-        if (this.is_me) {
+        if (this.character === "me") {
             this.playground.game_map.$canvas.on("contextmenu", function() {
-            return false;// 右键菜单取消
-        });
+                return false;// 右键菜单取消
+            });
             this.add_listening_events();
-        } else { // AI 玩家进行随机游走
+        } else if (this.character === "robot") { // AI 玩家进行随机游走
             let tx = Math.random() * this.playground.width / this.playground.scale;
             let ty = Math.random() * this.playground.height / this.playground.scale;
             this.move_to(tx, ty);
@@ -107,7 +110,7 @@ class Player extends AcGameObject {
         if (this.radius < this.eps ){ // 半径小到一定程度则死亡
             this.is_alive = false;
             this.destory();
-            if (this.is_me && !this.is_alive) $("canvas").unbind(); //会 unbind 所有事件
+            if (this.character === "me" && !this.is_alive) $("canvas").unbind(); //会 unbind 所有事件
             this.playground.game_map.$canvas.on("contextmenu", function() {
                 return false;// 右键菜单取消
             });
@@ -128,7 +131,7 @@ class Player extends AcGameObject {
 
     update_move() { // 更新玩家移动
         this.spend_time += this.timedelta / 1000; // 攻击冷静期, 前5秒不攻击
-        if (!this.is_me && this.spend_time > 5 && Math.random() < 1 / 180) {
+        if (this.character === "robot" && this.spend_time > 5 && Math.random() < 1 / 180) {
             // 敌人随机攻击，因每秒刷新60次，1/180的概率攻击，表示每3秒发射一次。
             let player = this.playground.players[Math.floor(Math.random() * this.playground.players.length)];
             let tx = player.x + player.speed * this.vx * this.timedelta / 1000 * 0.5;
@@ -148,7 +151,7 @@ class Player extends AcGameObject {
             if (this.move_length < this.eps) {
                 this.move_length = 0;
                 this.vx = this.vy = 0;
-                if (!this.is_me) {
+                if (this.character === "robot") {
                     let tx = Math.random() * this.playground.width / this.playground.scale;
                     let ty = Math.random() * this.playground.height / this.playground.scale;
                     this.move_to(tx, ty);
@@ -168,7 +171,7 @@ class Player extends AcGameObject {
 
     render() {
         let scale = this.playground.scale;
-		if (this.is_me) {
+		if (this.character !== "robot") {
             this.ctx.save();
             this.ctx.beginPath();
             this.ctx.arc(this.x * scale, this.y * scale, this.radius * scale, 0, Math.PI * 2, false);

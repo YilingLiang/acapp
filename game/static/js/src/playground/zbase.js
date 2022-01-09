@@ -36,20 +36,31 @@ class AcGamePlayground {
     update() {
     }
 
-    show() { // 打开 playground 界面
+    show(mode) { // 打开 playground 界面
+        let outer = this;
         this.$playground.show();
-
-        this.resize();
 
         this.width = this.$playground.width();
         this.height = this.$playground.height();
         this.game_map = new GameMap(this);
+        
+        this.resize();
+
         this.players = [];
         this.fireballs = []; // 存储攻击的火球
-        this.players.push(new Player(this, this.width / 2 / this.scale, this.height / 2 / this.scale, this.height * 0.05 / this.scale, "white", this.height * 0.15 / this.scale, true));
+        this.players.push(new Player(this, this.width / 2 / this.scale, this.height / 2 / this.scale, this.height * 0.05 / this.scale, "white", this.height * 0.15 / this.scale, "me", this.root.settings.username, this.root.settings.photo));
+        if (mode === "single mode"){
+            for (let i = 0; i < 5; i ++ ){
+                this.players.push(new Player(this, this.width / 2 / this.scale, this.height / 2 / this.scale, this.height * 0.05 / this.scale, this.get_random_color(), this.height * 0.15 / this.scale, "robot"));
+            }
+        } else if (mode === "multi mode") {
+            this.mps = new MultiPlayerSocket(this);
+            this.mps.uuid = this.players[0].uuid;
+            this.mps.ws.onopen = function(){
+                // 连接创建成功后向后端发送消息
+                outer.mps.send_create_player(outer.root.settings.username, outer.root.settings.photo);
 
-        for (let i = 0; i < 5; i ++ ){
-            this.players.push(new Player(this, this.width / 2 / this.scale, this.height / 2 / this.scale, this.height * 0.05 / this.scale, this.get_random_color(), this.height * 0.15 / this.scale, false));
+            };
         }
     }
 
