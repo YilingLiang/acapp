@@ -12,6 +12,13 @@ class GameMap extends AcGameObject {
     start() {
     }
 
+    resize() {// 动态调节窗口大小
+        this.ctx.canvas.width = this.playground.width;
+        this.ctx.canvas.height = this.playground.height;
+        this.ctx.fillStyle = "rgba(0, 0, 0, 1)"; // 避免调整大小时渐变的效果
+        this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+    }
+
     update() {
         this.render(); // 每一帧都要画一次
     }
