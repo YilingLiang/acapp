@@ -24,19 +24,29 @@ class FireBall extends AcGameObject {
             this.destory();
             return false;
         }
+        this.update_move();
+        if (this.player.character !== 'enemy') {
+            // 判断的决策权在所有者窗口
+            this.update_attack();
+        }
 
+        this.render();
+    }
+
+    update_move() {
         let moved = Math.min(this.move_length, this.speed * this.timedelta / 1000);
         this.x += this.vx * moved;
         this.y += this.vy * moved;
         this.move_length -= moved;
+    }
 
+    update_attack() {
         for (let i = 0; i < this.playground.fireballs.length; i ++ ) {
             // 判断攻击之间是否抵消, 同一玩家的火球之间不抵消
             let fireball = this.playground.fireballs[i];
             if (this.player != fireball.player && this.is_collision(fireball)) {
                 this.destory();
-                this.destory_fireball(fireball);
-                break;
+                this.destory_fireball_p(fireball);
             }
         }
         
@@ -45,10 +55,9 @@ class FireBall extends AcGameObject {
             let player = this.playground.players[i];
             if (this.player !== player && this.is_collision(player)) {
                 this.attack(player);
+                break; //只攻击一名玩家
             }
         }
-        
-        this.render();
     }
 
     get_dist(x1, y1, x2, y2) {
@@ -66,6 +75,10 @@ class FireBall extends AcGameObject {
     attack(player) {
         let angle = Math.atan2(player.y - this.y, player.x - this.x);
         player.is_attacked(angle, this.damage);
+        if (this.playground.mode === "multi mode") {
+            this.playground.mps.send_attack(player.uuid, player.x, player.y, angle, this.damage, this.uuid);
+        }
+
         this.destory();
     }
 
@@ -77,12 +90,15 @@ class FireBall extends AcGameObject {
         this.ctx.fill();
     }
 
-    destory_fireball(obj) {  // 
+    destory_fireball_p(obj) {  // 
         AC_GAME_OBJECTS.splice(AC_GAME_OBJECTS.indexOf(obj), 1);
         this.playground.fireballs.splice(this.playground.fireballs.indexOf(obj), 1);
     }
 
     on_destory() {
+        let fireballs = this.player.fireballs;
+        fireballs.splice(fireballs.indexOf(this), 1);
+
         this.playground.fireballs.splice(this.playground.fireballs.indexOf(this), 1);
     }
 
