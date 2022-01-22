@@ -25,7 +25,7 @@ def register(request):
     user = User(username=username)
     user.set_password(password)
     user.save()
-    imgurl = "https://p3-bcy.byteimg.com/img/banciyuan/user/1066320/item/web/17a6q/502750e05b6111e993a67d2ae0c49a26.jpg~tplv-banciyuan-w650.image"
+    imgurl = "https://cdn.jsdelivr.net/gh/yilingliang/cdn/img/lnbe.png"
     Player.objects.create(user=user, photo=imgurl)
     login(request, user)
     return JsonResponse({

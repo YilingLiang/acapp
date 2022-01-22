@@ -15,8 +15,8 @@ class MultiPlayerSocket {
         this.ws.onmessage = function(e) {
             let data = JSON.parse(e.data);
             let uuid = data.uuid;
-            console.log(uuid, data.uuid, outer.uuid);
-            if (uuid === outer.uuid) return false;
+            // console.log(uuid, data.uuid, outer.uuid);
+            // if (uuid === outer.uuid) return false; // 可以广播给自己 为了断线重连功能
             let event = data.event;
             if (event === "create_player") {
                 outer.receive_create_player(uuid, data.username, data.photo);
@@ -28,8 +28,9 @@ class MultiPlayerSocket {
                 outer.receive_attack(uuid, data.attackee_uuid, data.x, data.y, data.angle, data.damage, data.ball_uuid);
             } else if (event === "blink") {
                 outer.receive_blink(uuid, data.tx, data.ty);
+            } else if (event === "message") {
+                outer.receive_message(uuid, data.username, data.text);
             }
-
         };
     }
 
@@ -44,6 +45,10 @@ class MultiPlayerSocket {
     }
 
     receive_create_player(uuid, username, photo) {
+        for (let i = 0; i < this.playground.players.length; i ++){
+            let player = this.playground.players[i];
+            if (player.uuid === uuid) return;
+        }
         let player = new Player(
             this.playground, 
             this.playground.width / 2 / this.playground.scale,
@@ -143,5 +148,20 @@ class MultiPlayerSocket {
             player.blink(tx, ty);
         }
     }
+
+    send_message(username, text) {
+        let outer =this;
+        this.ws.send(JSON.stringify({
+            'event': "message",
+            'uuid': outer.uuid,
+            'username': username,
+            'text': text,
+        }));
+    }
+
+    receive_message(uuid, username, text) {
+        this.playground.chat_field.add_message(username, text);
+    }
+
 
 }
