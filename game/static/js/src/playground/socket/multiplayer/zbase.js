@@ -1,22 +1,24 @@
 class MultiPlayerSocket {
-    constructor (playground) {
+    constructor(playground) {
         this.playground = playground;
 
         this.ws = new WebSocket("wss://app817.acapp.acwing.com.cn/wss/multiplayer/");
+
         this.start();
     }
 
-    start () {
+    start() {
         this.receive();
     }
 
     receive () {
         let outer = this;
+
         this.ws.onmessage = function(e) {
             let data = JSON.parse(e.data);
             let uuid = data.uuid;
-            // console.log(uuid, data.uuid, outer.uuid);
-            // if (uuid === outer.uuid) return false; // 可以广播给自己 为了断线重连功能
+            if (uuid === outer.uuid) return false;
+
             let event = data.event;
             if (event === "create_player") {
                 outer.receive_create_player(uuid, data.username, data.photo);
@@ -24,7 +26,7 @@ class MultiPlayerSocket {
                 outer.receive_move_to(uuid, data.tx, data.ty);
             } else if (event === "shoot_fireball") {
                 outer.receive_shoot_fireball(uuid, data.tx, data.ty, data.ball_uuid);
-            }else if (event === "attack") {
+            } else if (event === "attack") {
                 outer.receive_attack(uuid, data.attackee_uuid, data.x, data.y, data.angle, data.damage, data.ball_uuid);
             } else if (event === "blink") {
                 outer.receive_blink(uuid, data.tx, data.ty);
@@ -40,42 +42,42 @@ class MultiPlayerSocket {
             'event': "create_player",
             'uuid': outer.uuid,
             'username': username,
-            'photo': photo
+            'photo': photo,
         }));
     }
 
-    receive_create_player(uuid, username, photo) {
-        for (let i = 0; i < this.playground.players.length; i ++){
-            let player = this.playground.players[i];
-            if (player.uuid === uuid) return;
+    get_player(uuid) {
+        let players = this.playground.players;
+        for (let i = 0; i < players.length; i ++ ) {
+            let player = players[i];
+            if (player.uuid === uuid)
+                return player;
         }
+
+        return null;
+    }
+
+    receive_create_player(uuid, username, photo) {
         let player = new Player(
-            this.playground, 
+            this.playground,
             this.playground.width / 2 / this.playground.scale,
-            0.5, 0.05,
+            0.5,
+            0.05,
             "white",
             0.15,
             "enemy",
-            username, photo,
+            username,
+            photo,
         );
 
         player.uuid = uuid;
         this.playground.players.push(player);
     }
 
-    get_player(uuid) {
-        let players = this.playground.players;
-        for (let i = 0; i < players.length; i ++){
-            let player = players[i];
-            if (player.uuid === uuid) return player;
-        }
-        return null;
-    }
-
     send_move_to(tx, ty) {
         let outer = this;
         this.ws.send(JSON.stringify({
-            'event': 'move_to',
+            'event': "move_to",
             'uuid': outer.uuid,
             'tx': tx,
             'ty': ty,
@@ -162,6 +164,4 @@ class MultiPlayerSocket {
     receive_message(uuid, username, text) {
         this.playground.chat_field.add_message(username, text);
     }
-
-
 }

@@ -21,12 +21,13 @@ class FireBall extends AcGameObject {
 
     update() {
         if (this.move_length < this.eps) {
-            this.destory();
+            this.destroy();
             return false;
         }
+
         this.update_move();
-        if (this.player.character !== 'enemy') {
-            // 判断的决策权在所有者窗口
+
+        if (this.player.character !== "enemy") {
             this.update_attack();
         }
 
@@ -40,29 +41,38 @@ class FireBall extends AcGameObject {
         this.move_length -= moved;
     }
 
-    update_attack() {
-        for (let i = 0; i < this.playground.fireballs.length; i ++ ) {
+    check_collision_fireball() {
+        for (let i = 0; i < this.playground.fireballs_in_playground.length; i ++ ) {
             // 判断攻击之间是否抵消, 同一玩家的火球之间不抵消
-            let fireball = this.playground.fireballs[i];
-            if (this.player != fireball.player && this.is_collision(fireball)) {
-                this.destory();
-                this.destory_fireball_p(fireball);
+            let fb = this.playground.fireballs_in_playground[i];
+            if (this.player != fb.player && this.is_collision(fb)) {
+                this.destroy();
+                this.destroy_fireball_in_playground(fb);
             }
         }
-        
+    }
+
+    destroy_fireball_in_playground(fb) {
+        AC_GAME_OBJECTS.splice(AC_GAME_OBJECTS.indexOf(fb), 1);
+        this.playground.fireballs_in_playground.splice(this.playground.fireballs_in_playground.indexOf(fb), 1);
+    }
+
+    update_attack() {
+        this.check_collision_fireball();
+
         for (let i = 0; i < this.playground.players.length; i ++ ) {
-            // 判断是否攻击中玩家, 自己的技能不能击中自己
             let player = this.playground.players[i];
             if (this.player !== player && this.is_collision(player)) {
                 this.attack(player);
-                break; //只攻击一名玩家
+                break;
             }
         }
     }
 
     get_dist(x1, y1, x2, y2) {
-        let dx = x1 - x2, dy = y1 - y2;
-        return Math.sqrt(dx *dx + dy * dy);
+        let dx = x1 - x2;
+        let dy = y1 - y2;
+        return Math.sqrt(dx * dx + dy * dy);
     }
 
     is_collision(obj) {
@@ -75,11 +85,12 @@ class FireBall extends AcGameObject {
     attack(player) {
         let angle = Math.atan2(player.y - this.y, player.x - this.x);
         player.is_attacked(angle, this.damage);
+
         if (this.playground.mode === "multi mode") {
             this.playground.mps.send_attack(player.uuid, player.x, player.y, angle, this.damage, this.uuid);
         }
 
-        this.destory();
+        this.destroy();
     }
 
     render() {
@@ -90,16 +101,15 @@ class FireBall extends AcGameObject {
         this.ctx.fill();
     }
 
-    destory_fireball_p(obj) {  // 
-        AC_GAME_OBJECTS.splice(AC_GAME_OBJECTS.indexOf(obj), 1);
-        this.playground.fireballs.splice(this.playground.fireballs.indexOf(obj), 1);
-    }
-
-    on_destory() {
+    on_destroy() {
         let fireballs = this.player.fireballs;
-        fireballs.splice(fireballs.indexOf(this), 1);
+        for (let i = 0; i < fireballs.length; i ++ ) {
+            if (fireballs[i] === this) {
+                fireballs.splice(i, 1);
+                break;
+            }
+        }
 
-        this.playground.fireballs.splice(this.playground.fireballs.indexOf(this), 1);
+        this.playground.fireballs_in_playground.splice(this.playground.fireballs_in_playground.indexOf(this), 1);
     }
-
 }

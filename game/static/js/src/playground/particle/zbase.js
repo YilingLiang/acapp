@@ -3,9 +3,11 @@ class Particle extends AcGameObject {
         super();
         this.playground = playground;
         this.ctx = this.playground.game_map.ctx;
-        this.x = x, this.y = y;
+        this.x = x;
+        this.y = y;
         this.radius = radius;
-        this.vx = vx, this.vy = vy;
+        this.vx = vx;
+        this.vy = vy;
         this.color = color;
         this.speed = speed;
         this.move_length = move_length;
@@ -13,16 +15,16 @@ class Particle extends AcGameObject {
         this.eps = 0.01;
     }
 
-    start() {}
+    start() {
+    }
 
     update() {
-        if (this.speed < this.eps || this.move_length < this.eps){
-            this.destory();
+        if (this.move_length < this.eps || this.speed < this.eps) {
+            this.destroy();
             return false;
         }
 
         let moved = Math.min(this.move_length, this.speed * this.timedelta / 1000);
-        
         this.x += this.vx * moved;
         this.y += this.vy * moved;
         this.speed *= this.friction;
@@ -32,6 +34,7 @@ class Particle extends AcGameObject {
 
     render() {
         let scale = this.playground.scale;
+
         this.ctx.beginPath();
         this.ctx.arc(this.x * scale, this.y * scale, this.radius * scale, 0, Math.PI * 2, false);
         this.ctx.fillStyle = this.color;

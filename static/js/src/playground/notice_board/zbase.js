@@ -1,13 +1,13 @@
 class NoticeBoard extends AcGameObject {
     constructor(playground) {
         super();
+
         this.playground = playground;
         this.ctx = this.playground.game_map.ctx;
         this.text = "已就绪：0人";
     }
 
     start() {
-
     }
 
     write(text) {

@@ -4,7 +4,7 @@ import glob
 import sys
 sys.path.insert(0, glob.glob('../../')[0])
 
-from match_server_py.match_service import Match
+from match_server.match_service import Match
 
 from thrift.transport import TSocket
 from thrift.transport import TTransport
@@ -40,7 +40,7 @@ class Pool:
 
     def check_match(self, a, b):
         dt = abs(a.score - b.score)
-        a_max_dif = a.waiting_time * 50 # 每过一秒钟匹配要求降低50分
+        a_max_dif = a.waiting_time * 50
         b_max_dif = b.waiting_time * 50
         return dt <= a_max_dif and dt <= b_max_dif
 
@@ -106,7 +106,7 @@ def get_player_from_queue():
         return None
 
 
-def worker(): # consume_task
+def worker():
     pool = Pool()
     while True:
         player = get_player_from_queue()
@@ -128,9 +128,8 @@ if __name__ == '__main__':
     server = TServer.TThreadedServer(
         processor, transport, tfactory, pfactory)
 
-    Thread(target=worker, daemon=True).start() # True 杀掉主线程则当前线程会杀掉
+    Thread(target=worker, daemon=True).start()
 
     print('Starting the server...')
     server.serve()
     print('done.')
-
