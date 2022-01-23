@@ -7,6 +7,7 @@ class Player(models.Model):
     photo = models.URLField(max_length=256, blank=True) # 新增图片进数据库
     openid = models.CharField(default="", max_length=50, blank=True, null=True)
     giteeid = models.CharField(default="", max_length=50, blank=True, null=True)
+    score = models.IntegerField(default=1500)
 
     def __str__(self): # 数据库显示
         return str(self.user)
