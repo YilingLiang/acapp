@@ -14,7 +14,7 @@ class AcGamePlayground {
         return colors[Math.floor(Math.random() * colors.length)];
     }
 
-    create_uuid() {
+    create_uuid() { // 函数的 uuid
         let res = "";
         for (let i = 0; i < 8; i ++ ) {
             let x = parseInt(Math.floor(Math.random() * 10));  // 返回[0, 1)之间的数
