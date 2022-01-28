@@ -10,11 +10,11 @@ class AcGamePlayground {
     }
 
     get_random_color() {
-        let colors = ["blue", "red", "pink", "grey", "green", "orange"];
+        let colors = ["pink", "grey", "orange", "LightSkyBlue", "cyan", "pink", "Moccasin", "PaleGreen", "Violet", "Tomato", "Silver"];
         return colors[Math.floor(Math.random() * colors.length)];
     }
 
-    create_uuid() { // 函数的 uuid
+    create_uuid() {
         let res = "";
         for (let i = 0; i < 8; i ++ ) {
             let x = parseInt(Math.floor(Math.random() * 10));  // 返回[0, 1)之间的数
@@ -70,7 +70,7 @@ class AcGamePlayground {
         this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.05, "white", 0.15, "me", this.root.settings.username, this.root.settings.photo));
 
         if (mode === "single mode") {
-            for (let i = 0; i < 8; i ++ ) {
+            for (let i = 0; i < 10; i ++ ) {
                 this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.05, this.get_random_color(), 0.15, "robot"));
             }
         } else if (mode === "multi mode") {

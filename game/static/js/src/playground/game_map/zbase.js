@@ -16,7 +16,7 @@ class GameMap extends AcGameObject {
     resize() { // 动态调节窗口大小
         this.ctx.canvas.width = this.playground.width;
         this.ctx.canvas.height = this.playground.height;
-        this.ctx.fillStyle = "rgba(0, 0, 0, 1)"; // 避免调整大小时渐变的效果
+        this.ctx.fillStyle = "rgba(176, 224, 230, 0.8)"; // 避免调整大小时渐变的效果
         this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
     }
 
@@ -25,7 +25,11 @@ class GameMap extends AcGameObject {
     }
 
     render() { // 渲染画布函数
-        this.ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
+        if(this.playground.players.length > 0 && this.playground.players[0].character === 'me') {
+            this.ctx.fillStyle = 'rgba(176, 224, 230, 0.8)';
+        } else {
+            this.ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
+        }
         this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
     }
 }

@@ -10,7 +10,7 @@ class AcGamePlayground {
     }
 
     get_random_color() {
-        let colors = ["blue", "red", "pink", "grey", "green", "orange"];
+        let colors = ["pink", "grey", "orange", "LightSkyBlue", "cyan", "pink", "Moccasin", "PaleGreen", "Violet", "Tomato", "Silver"];
         return colors[Math.floor(Math.random() * colors.length)];
     }
 
@@ -46,6 +46,14 @@ class AcGamePlayground {
         this.scale = this.height;
 
         if (this.game_map) this.game_map.resize();
+        if (this.mini_map) this.mini_map.resize();
+    }
+
+    re_cx_cy(x, y) { // 画到中心
+        this.cx = Math.max(x - 0.5 * this.width / this.scale, 0);
+        this.cx = Math.min(this.cx, this.virtual_map_width - this.width / this.scale);
+        this.cy = Math.max(y - 0.5 * this.height / this.scale, 0);
+        this.cy = Math.min(this.cy, this.virtual_map_height - 1);
     }
 
     show(mode) {  // 打开playground界面
@@ -70,7 +78,7 @@ class AcGamePlayground {
         this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.05, "white", 0.15, "me", this.root.settings.username, this.root.settings.photo));
 
         if (mode === "single mode") {
-            for (let i = 0; i < 8; i ++ ) {
+            for (let i = 0; i < 10; i ++ ) {
                 this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.05, this.get_random_color(), 0.15, "robot"));
             }
         } else if (mode === "multi mode") {
