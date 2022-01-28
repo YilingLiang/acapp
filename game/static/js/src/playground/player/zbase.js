@@ -52,8 +52,10 @@ class Player extends AcGameObject {
         if (this.character === "me") {
             this.add_listening_events();
         } else if (this.character === "robot") { // AI 玩家随机游走
-            let tx = Math.random() * this.playground.width / this.playground.scale;
-            let ty = Math.random() * this.playground.height / this.playground.scale;
+            // let tx = Math.random() * this.playground.width / this.playground.scale;
+            // let ty = Math.random() * this.playground.height / this.playground.scale;
+            let tx = Math.random() * this.playground.virtual_map_width; // 全地图
+            let ty = Math.random() * this.playground.virtual_map_height;
             this.move_to(tx, ty);
         }
     }
@@ -68,17 +70,32 @@ class Player extends AcGameObject {
                 return true;
 
             const rect = outer.ctx.canvas.getBoundingClientRect();
+            let tx = (e.clientX - rect.left) / outer.playground.scale + outer.playground.cx;
+            let ty = (e.clientY - rect.top) / outer.playground.scale + outer.playground.cy;
             if (e.which === 3) { // 3鼠标右键，1左键，2滚轮
-                let tx = (e.clientX - rect.left) / outer.playground.scale;
-                let ty = (e.clientY - rect.top) / outer.playground.scale;
+                // let tx = (e.clientX - rect.left) / outer.playground.scale;
+                // let ty = (e.clientY - rect.top) / outer.playground.scale;   
+                if (tx < 0 || tx > outer.playground.virtual_map_width || ty < 0 || ty > outer.playground.virtual_map_height) return; // 不能向地图外移动
+                //鼠标右键的粒子效果
+                for (let i = 0; i < 5 + Math.random() * 10; i++) {
+                    let radius = 0.05 * Math.random() * 0.1;
+                    let angle = Math.PI * 2 * Math.random();
+                    let vx = Math.cos(angle);
+                    let vy = Math.sin(angle);
+                    let color = outer.color;
+                    let speed = 0.15 * 5;
+                    let move_length = 0.05 * Math.random() * 3.5;
+                    new Particle(outer.playground, (e.clientX - rect.left) / outer.playground.scale + outer.playground.cx, (e.clientY - rect.top) / outer.playground.scale + outer.playground.cy, radius, vx, vy, color, speed, move_length);
+                }
+                
                 outer.move_to(tx, ty);
 
                 if (outer.playground.mode === "multi mode") {
                     outer.playground.mps.send_move_to(tx, ty);
                 }
             } else if (e.which === 1) {
-                let tx = (e.clientX - rect.left) / outer.playground.scale;
-                let ty = (e.clientY - rect.top) / outer.playground.scale;
+                // let tx = (e.clientX - rect.left) / outer.playground.scale;
+                // let ty = (e.clientY - rect.top) / outer.playground.scale;
                 if (outer.cur_skill === "fireball") {
                     if (outer.fireball_coldtime > outer.eps)
                         return false;
@@ -113,6 +130,12 @@ class Player extends AcGameObject {
                 if (outer.playground.mode === "multi mode") {  // 关闭聊天框
                     outer.playground.chat_field.hide_input();
                 }
+            } 
+
+            if (e.which === 32 || e.which === 49) { // 按1键或空格聚焦玩家
+                outer.playground.focus_player = outer;
+                outer.playground.re_cx_cy(outer.x, outer.y);
+                return false;
             }
 
             if (outer.playground.state !== "fighting")
@@ -120,7 +143,7 @@ class Player extends AcGameObject {
 
             if (e.which === 81) {  // q
                 if (outer.fireball_coldtime > outer.eps)
-                    return true;
+                    return true; // 是否向上冒泡，true表示是
 
                 outer.cur_skill = "fireball";
                 return false;
@@ -222,6 +245,12 @@ class Player extends AcGameObject {
         if (this.character === "me" && this.playground.state === "fighting") {
             this.update_coldtime();
         }
+
+        if (this.character === "me" && this.playground.focus_player === this) {
+            // 如果是玩家，并且正在被聚焦，修改 background的 (cx, cy) 使玩家始终处于中央
+            this.playground.re_cx_cy(this.x, this.y);
+        }
+
         this.update_move();
 
         this.render();
@@ -246,7 +275,7 @@ class Player extends AcGameObject {
         if (this.character === "robot" && this.spent_time > 4 && Math.random() < 1 / 180) {
             // 敌人随机攻击，因每秒刷新60次，1/180的概率攻击，表示每3秒发射一次
             let player = this.playground.players[Math.floor(Math.random() * this.playground.players.length)];
-            let tx = player.x + player.speed * this.vx * this.timedelta / 1000 * 0.3;
+            let tx = player.x + player.speed * this.vx * this.timedelta / 1000 * 0.3;  // AI 预判
             let ty = player.y + player.speed * this.vy * this.timedelta / 1000 * 0.3;
             this.shoot_fireball(tx, ty);
         }
@@ -262,8 +291,10 @@ class Player extends AcGameObject {
                 this.move_length = 0;
                 this.vx = this.vy = 0;
                 if (this.character === "robot") {
-                    let tx = Math.random() * this.playground.width / this.playground.scale;
-                    let ty = Math.random() * this.playground.height / this.playground.scale;
+                    // let tx = Math.random() * this.playground.width / this.playground.scale;
+                    // let ty = Math.random() * this.playground.height / this.playground.scale;
+                    let tx = Math.random() * this.playground.virtual_map_width;
+                    let ty = Math.random() * this.playground.virtual_map_height;
                     this.move_to(tx, ty);
                 }
             } else {
@@ -277,17 +308,30 @@ class Player extends AcGameObject {
 
     render() {
         let scale = this.playground.scale;
+        let ctx_x = this.x - this.playground.cx;
+        let ctx_y = this.y - this.playground.cy; // 把虚拟地图中的坐标换算成canvas中的坐标
+        if (ctx_x < -0.2 * this.playground.width / scale ||
+            ctx_x > 1.2 * this.playground.width / scale ||
+            ctx_y < -0.2 * this.playground.height / scale ||
+            ctx_y > 1.2 * this.playground.height / scale) {
+            if (this.character != "me") { // 一个隐藏的bug，如果是玩家自己并且return，会导致技能图标渲染不出来
+                return;
+            }
+        }
+
+        
         if (this.character !== "robot") {
             this.ctx.save();
             this.ctx.beginPath();
-            this.ctx.arc(this.x * scale, this.y * scale, this.radius * scale, 0, Math.PI * 2, false);
+            // this.ctx.arc(this.x * scale, this.y * scale, this.radius * scale, 0, Math.PI * 2, false);
+            this.ctx.arc(ctx_x * scale, ctx_y * scale, this.radius * scale, 0, Math.PI * 2, false);
             this.ctx.stroke();
             this.ctx.clip();
-            this.ctx.drawImage(this.img, (this.x - this.radius) * scale, (this.y - this.radius) * scale, this.radius * 2 * scale, this.radius * 2 * scale);
+            this.ctx.drawImage(this.img, (ctx_x - this.radius) * scale, (ctx_y - this.radius) * scale, this.radius * 2 * scale, this.radius * 2 * scale);
             this.ctx.restore();
         } else {
             this.ctx.beginPath();
-            this.ctx.arc(this.x * scale, this.y * scale, this.radius * scale, 0, Math.PI * 2, false);
+            this.ctx.arc(ctx_x * scale, ctx_y * scale, this.radius * scale, 0, Math.PI * 2, false);
             this.ctx.fillStyle = this.color;
             this.ctx.fill();
         }

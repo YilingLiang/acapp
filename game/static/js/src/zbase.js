@@ -6,6 +6,7 @@ export class AcGame {
         
         this.settings = new Settings(this);
         this.menu = new AcGameMenu(this);
+        this.teach = new AcGameTeach(this); // 游戏介绍页面
         this.playground = new AcGamePlayground(this);
 
         this.start();

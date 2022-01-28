@@ -7,13 +7,17 @@ class AcGameMenu {
     <div class="ac-game-menu-field">
         <div class="ac-game-menu-field-item ac-game-menu-field-item-single-mode">
             单人模式
-        </div>
+        </div> 
         <br>
         <div class="ac-game-menu-field-item ac-game-menu-field-item-multi-mode">
             多人模式
         </div>
         <br>
-        <div class="ac-game-menu-field-item ac-game-menu-field-item-settings">
+        <div class="ac-game-menu-field-item ac-game-menu-field-item-teach">
+            游戏说明
+        </div>
+        <br>
+        <div class="ac-game-menu-field-item ac-game-menu-field-item-exit">
             退出
         </div>
     </div>
@@ -23,7 +27,8 @@ class AcGameMenu {
         this.root.$ac_game.append(this.$menu);
         this.$single_mode = this.$menu.find('.ac-game-menu-field-item-single-mode');
         this.$multi_mode = this.$menu.find('.ac-game-menu-field-item-multi-mode');
-        this.$settings = this.$menu.find('.ac-game-menu-field-item-settings');
+        this.$exit = this.$menu.find('.ac-game-menu-field-item-exit');
+        this.$teach = this.$menu.find('.ac-game-menu-field-item-teach');
 
         this.start();
     }
@@ -43,9 +48,13 @@ class AcGameMenu {
             outer.hide();
             outer.root.playground.show("multi mode");
         });
-        this.$settings.click(function(){
-            console.log("click settings");
+        this.$exit.click(function(){
+            console.log("click exit");
             outer.root.settings.logout_on_remote();
+        });
+        this.$teach.click(function(){
+            outer.hide();
+            outer.root.teach.show();
         });
     }
 

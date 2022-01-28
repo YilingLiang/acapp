@@ -38,12 +38,12 @@
     background-color: grey;
 }
 
-.ac-game-playground > canvas {
+/* .ac-game-playground > canvas { */
+.game-map {
     position: relative;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%); /*锚点*/
-    
+    transform: translate(-50%, -50%); /*锚点*/ 
 }
 
 .ac-game-settings {
@@ -206,3 +206,61 @@
 
     background-color: rgba(222, 225, 230, 0.2);
 }
+
+/*游戏说明页面*/
+.ac-game-teach {
+    text-align: center;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    user-select: none;
+    background-size: 100% 100%;
+    background-color: rgba(176,224,230);
+    color: white;
+}
+
+.ac-game-game-teach {
+    padding-top: 3vh;
+}
+
+.ac-game-game-teach-title {
+    margin-bottom: 1vh;
+    font-size: 3.5vh;
+}
+
+.ac-game-game-teach-content {
+    margin: 2vh 10vh;
+    font-size: 2.5vh;
+}
+
+.ac-game-op-teach {
+}
+
+.ac-game-op-teach-title {
+    font-size: 3.5vh;
+}
+
+.ac-game-op-teach-content {
+    margin: 2vh 10vh;
+    font-size: 2.5vh
+}
+
+.ac-game-teach-return {
+    margin: 0 auto;
+    color: white;
+    height: 6vh;
+    width: 10vw;
+    font-size: 4vh;
+    font-style: italic;
+    text-align: center;
+    background-color: rgba(39,21,28, 0.6);
+    border-radius: 10px;
+    letter-spacing: 0.5vw;
+    cursor: pointer;
+}
+
+.ac-game-teach-return:hover {
+    transform: scale(1.2);
+    transition: .2s;
+}
+
