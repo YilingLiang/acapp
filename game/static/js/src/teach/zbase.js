@@ -6,7 +6,7 @@ class AcGameTeach {
     <div class="ac-game-game-teach">
         <div class="ac-game-game-teach-title">游戏说明</div>
         <p class="ac-game-game-teach-content">
-        单人游戏由玩家与AI对战，多人游戏每局对战有3名玩家参与，击败所有其他玩家方可取胜。
+        单人游戏由玩家与AI对战，多人游戏每局对战有3名玩家参与，击败所有其他玩家方可取胜。<br>(对游戏有其它意见或建议可联系作者邮箱：15600992130@163.com)
         </p>
     </div>
     <div class="ac-game-op-teach">
@@ -18,7 +18,7 @@ class AcGameTeach {
             <p>F：闪现</p>
             <p>Enter：多人游戏中开启局内聊天</p>
             <p>ECS：关闭多人游戏中聊天输入框</p>
-            <p>左键小地图拖动：切地图</p>
+            <p>鼠标左键拖动小地图：切地图</p>
             <p>1或space：小地图视角切回玩家</p>
         </div>
     </div>

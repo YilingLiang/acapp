@@ -169,7 +169,7 @@ class Player extends AcGameObject {
         this.playground.fireballs_in_playground.push(fireball);
         this.fireballs.push(fireball);
 
-        this.fireball_coldtime = 3;
+        this.fireball_coldtime = 3; // 0.1
 
         return fireball;
     }
